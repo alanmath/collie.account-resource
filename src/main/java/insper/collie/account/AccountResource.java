@@ -15,6 +15,7 @@ public class AccountResource implements AccountController {
     @Autowired
     private AccountService accountService;
 
+
     @GetMapping("/accounts/info")
     public ResponseEntity<Map<String, String>> info() {
         return new ResponseEntity<Map<String, String>>(
@@ -61,9 +62,15 @@ public class AccountResource implements AccountController {
     }
 
     @Override
-    public ResponseEntity<AccountOut> update(String id, AccountIn in) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
+    public ResponseEntity<AccountOut> update(String idUser, String id, AccountIn in) {
+
+        Account account = AccountParser.to(in);
+        account = accountService.update(idUser, id, account);
+        if(account == null){
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(AccountParser.to(account));
     }
 
     @Override
@@ -82,6 +89,25 @@ public class AccountResource implements AccountController {
             .name(roleUser)
             .build();
         return ResponseEntity.ok(account);
+    }
+
+    @Override
+    public ResponseEntity<AccountOut> getAccount(String idUser) {
+
+        Account account = accountService.read(idUser);
+        if(account == null){
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(AccountParser.to(account));
+    }
+
+    @Override
+    public ResponseEntity<Boolean> isAccount(String id){
+
+        Boolean isAccount = accountService.isAccount(id);
+
+        return ResponseEntity.ok(isAccount);
     }
     
 }
