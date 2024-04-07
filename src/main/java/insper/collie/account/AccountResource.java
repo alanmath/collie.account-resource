@@ -8,14 +8,27 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 
 @RestController
+@Tag(name = "Account", description = "API de Contas")
 public class AccountResource implements AccountController {
 
     @Autowired
     private AccountService accountService;
 
     @GetMapping("/accounts/info")
+    @Operation(summary = "Obter informações do sistema", description = "Retorna informações básicas do sistema e do ambiente de execução.",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Informações obtidas com sucesso", content = @Content(schema = @Schema(implementation = Map.class)))
+        })
     public ResponseEntity<Map<String, String>> info() {
         return new ResponseEntity<Map<String, String>>(
             Map.ofEntries(
@@ -44,7 +57,14 @@ public class AccountResource implements AccountController {
         );
     }
 
+    
     @Override
+    @PostMapping("/accounts")
+    @Operation(summary = "Criar uma nova conta", description = "Cria uma nova conta de usuário e retorna o objeto criado com seu ID.",
+        responses = {
+            @ApiResponse(responseCode = "201", description = "Conta criada com sucesso", content = @Content(schema = @Schema(implementation = AccountOut.class))),
+            @ApiResponse(responseCode = "400", description = "Dados de entrada inválidos")
+        })
     public ResponseEntity<AccountOut> create(AccountIn in) {
         // parser
         Account account = AccountParser.to(in);
@@ -61,12 +81,25 @@ public class AccountResource implements AccountController {
     }
 
     @Override
+    @PutMapping("/accounts/{id}")
+    @Operation(summary = "Atualizar conta", description = "Atualiza informações de uma conta de usuário existente.",
+    responses = {
+        @ApiResponse(responseCode = "200", description = "Conta atualizada com sucesso", content = @Content(schema = @Schema(implementation = AccountOut.class))),
+        @ApiResponse(responseCode = "404", description = "Conta não encontrada"),
+        @ApiResponse(responseCode = "400", description = "Dados de entrada inválidos")
+    })
     public ResponseEntity<AccountOut> update(String id, AccountIn in) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'update'");
     }
 
     @Override
+    @PostMapping("/accounts/login")
+    @Operation(summary = "Login de usuário", description = "Autentica um usuário com base no email e senha fornecidos.",
+    responses = {
+        @ApiResponse(responseCode = "200", description = "Usuário autenticado com sucesso", content = @Content(schema = @Schema(implementation = AccountOut.class))),
+        @ApiResponse(responseCode = "403", description = "Credenciais inválidas ou acesso negado")
+    })
     public ResponseEntity<AccountOut> login(LoginIn in) {
         Account account = accountService.login(in.email(), in.password());
         if (account == null) {
@@ -75,7 +108,12 @@ public class AccountResource implements AccountController {
         return ResponseEntity.ok(AccountParser.to(account));
     }
 
-    @Override
+    @GetMapping("/accounts/{idUser}")
+    @Operation(summary = "Obter detalhes da conta", description = "Retorna detalhes de uma conta de usuário específica com base no ID do usuário.",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Detalhes da conta retornados com sucesso", content = @Content(schema = @Schema(implementation = AccountOut.class))),
+            @ApiResponse(responseCode = "404", description = "Conta não encontrada")
+        })
     public ResponseEntity<AccountOut> read(String idUser, String roleUser) {
         final AccountOut account = AccountOut.builder()
             .id(idUser)
@@ -83,5 +121,4 @@ public class AccountResource implements AccountController {
             .build();
         return ResponseEntity.ok(account);
     }
-    
 }
