@@ -24,6 +24,7 @@ public class AccountResource implements AccountController {
     @Autowired
     private AccountService accountService;
 
+
     @GetMapping("/accounts/info")
     @Operation(summary = "Obter informações do sistema", description = "Retorna informações básicas do sistema e do ambiente de execução.",
         responses = {
@@ -88,9 +89,15 @@ public class AccountResource implements AccountController {
         @ApiResponse(responseCode = "404", description = "Conta não encontrada"),
         @ApiResponse(responseCode = "400", description = "Dados de entrada inválidos")
     })
-    public ResponseEntity<AccountOut> update(String id, AccountIn in) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
+    public ResponseEntity<AccountOut> update(String idUser, String id, AccountIn in) {
+
+        Account account = AccountParser.to(in);
+        account = accountService.update(idUser, id, account);
+        if(account == null){
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(AccountParser.to(account));
     }
 
     @Override
@@ -121,4 +128,24 @@ public class AccountResource implements AccountController {
             .build();
         return ResponseEntity.ok(account);
     }
+
+    @Override
+    public ResponseEntity<AccountOut> getAccount(String idUser) {
+
+        Account account = accountService.read(idUser);
+        if(account == null){
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(AccountParser.to(account));
+    }
+
+    @Override
+    public ResponseEntity<Boolean> isAccount(String id){
+
+        Boolean isAccount = accountService.isAccount(id);
+
+        return ResponseEntity.ok(isAccount);
+    }
+    
 }
