@@ -5,9 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
-@EnableFeignClients(basePackages = {
-    "insper.collie.auth"
-})
+@EnableFeignClients
 @EnableDiscoveryClient
 @SpringBootApplication
 public class AccountApplication {

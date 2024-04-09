@@ -9,7 +9,9 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
+import insper.collie.account.exceptions.AccountNotFoundException;
+import insper.collie.account.exceptions.EmailAlreadyExistsException;
+import insper.collie.account.exceptions.EmailOrPasswordIncorrectException;
 import lombok.NonNull;
 
 @Service
@@ -22,26 +24,31 @@ public class AccountService {
 
 
     public Account create(Account in) {
+        if (accountRepository.existsByEmail(in.email())) throw new EmailAlreadyExistsException(in.email());
         in.hash(calculateHash(in.password()));
         in.password(null);
         return accountRepository.save(new AccountModel(in)).to();
     }
 
     public Account read(@NonNull String id) {
-        return accountRepository.findById(id).map(AccountModel::to).orElse(null);
+        Account account = accountRepository.findById(id).map(AccountModel::to).orElse(null);
+        if (account == null) throw new AccountNotFoundException(id);
+        return account;
     }
 
     public Account login(String email, String password) {
         String hash = calculateHash(password);
-        return accountRepository.findByEmailAndHash(email, hash).map(AccountModel::to).orElse(null);
+        Account account = accountRepository.findByEmailAndHash(email, hash).map(AccountModel::to).orElse(null);
+        if (account == null) throw new EmailOrPasswordIncorrectException();
+        return account;
     }
 
-    public Account update(String idUser, String id, Account in) {
+    public Account update(String idUser, Account in) {
 
-        if(!idUser.equals(id)) return null;
 
-        AccountModel account = accountRepository.findById(id).orElse(null);
-        if (account == null) return null;
+
+        AccountModel account = accountRepository.findById(idUser).orElse(null);
+        if (account == null) throw new AccountNotFoundException(idUser);
 
         if (in.name() != null) {
             account.name(in.name());
