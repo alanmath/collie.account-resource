@@ -8,8 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -60,7 +58,6 @@ public class AccountResource implements AccountController {
 
     
     @Override
-    @PostMapping("/accounts")
     @Operation(summary = "Criar uma nova conta", description = "Cria uma nova conta de usuário e retorna o objeto criado com seu ID.",
         responses = {
             @ApiResponse(responseCode = "201", description = "Conta criada com sucesso", content = @Content(schema = @Schema(implementation = AccountOut.class))),
@@ -82,7 +79,6 @@ public class AccountResource implements AccountController {
     }
 
     @Override
-    @PutMapping("/accounts/{id}")
     @Operation(summary = "Atualizar conta", description = "Atualiza informações de uma conta de usuário existente.",
     responses = {
         @ApiResponse(responseCode = "200", description = "Conta atualizada com sucesso", content = @Content(schema = @Schema(implementation = AccountOut.class))),
@@ -101,7 +97,6 @@ public class AccountResource implements AccountController {
     }
 
     @Override
-    @PostMapping("/accounts/login")
     @Operation(summary = "Login de usuário", description = "Autentica um usuário com base no email e senha fornecidos.",
     responses = {
         @ApiResponse(responseCode = "200", description = "Usuário autenticado com sucesso", content = @Content(schema = @Schema(implementation = AccountOut.class))),
@@ -115,7 +110,7 @@ public class AccountResource implements AccountController {
         return ResponseEntity.ok(AccountParser.to(account));
     }
 
-    @GetMapping("/accounts/{idUser}")
+    @Override
     @Operation(summary = "Obter detalhes da conta", description = "Retorna detalhes de uma conta de usuário específica com base no ID do usuário.",
         responses = {
             @ApiResponse(responseCode = "200", description = "Detalhes da conta retornados com sucesso", content = @Content(schema = @Schema(implementation = AccountOut.class))),
