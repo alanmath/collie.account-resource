@@ -85,10 +85,10 @@ public class AccountResource implements AccountController {
         @ApiResponse(responseCode = "404", description = "Conta não encontrada"),
         @ApiResponse(responseCode = "400", description = "Dados de entrada inválidos")
     })
-    public ResponseEntity<AccountOut> update(String idUser, String id, AccountIn in) {
+    public ResponseEntity<AccountOut> update(String idUser,  AccountIn in) {
 
         Account account = AccountParser.to(in);
-        account = accountService.update(idUser, id, account);
+        account = accountService.update(idUser, account);
         if(account == null){
             return ResponseEntity.notFound().build();
         }
@@ -110,21 +110,27 @@ public class AccountResource implements AccountController {
         return ResponseEntity.ok(AccountParser.to(account));
     }
 
+
     @Override
-    @Operation(summary = "Obter detalhes da conta", description = "Retorna detalhes de uma conta de usuário específica com base no ID do usuário.",
+    @Operation(summary = "Obter detalhes da conta do usuário logado", description = "Retorna detalhes de uma conta do usuário logado com base no header.",
         responses = {
             @ApiResponse(responseCode = "200", description = "Detalhes da conta retornados com sucesso", content = @Content(schema = @Schema(implementation = AccountOut.class))),
-            @ApiResponse(responseCode = "404", description = "Conta não encontrada")
         })
-    public ResponseEntity<AccountOut> read(String idUser, String roleUser) {
-        final AccountOut account = AccountOut.builder()
+    public ResponseEntity<AccountInfo> getUserAccount(String idUser, String roleUser) {
+
+        AccountInfo account = AccountInfo.builder()
             .id(idUser)
-            .name(roleUser)
+            .role(roleUser)
             .build();
         return ResponseEntity.ok(account);
     }
 
     @Override
+    @Operation(summary = "Obter detalhes da conta", description = "Retorna detalhes de uma conta de usuário específica com base no ID do usuário.",
+    responses = {
+        @ApiResponse(responseCode = "200", description = "Detalhes da conta retornados com sucesso", content = @Content(schema = @Schema(implementation = AccountOut.class))),
+        @ApiResponse(responseCode = "404", description = "Conta não encontrada")
+    })
     public ResponseEntity<AccountOut> getAccount(String idUser) {
 
         Account account = accountService.read(idUser);
@@ -136,6 +142,10 @@ public class AccountResource implements AccountController {
     }
 
     @Override
+    @Operation(summary = "Verificar se a conta existe", description = "Verifica se uma conta específica existe pelo seu ID.",
+    responses = {
+        @ApiResponse(responseCode = "200", description = "true ou false"),
+    })
     public ResponseEntity<Boolean> isAccount(String id){
 
         Boolean isAccount = accountService.isAccount(id);
