@@ -1,6 +1,6 @@
 pipeline {
     agent any
-    stages (
+    stages {
         stage ('Jenkins Account') {
             steps {
                 echo 'Account resource'
@@ -16,5 +16,5 @@ pipeline {
                 sh 'mvn clean package'
             }
         }
-    )
+    }
 }
