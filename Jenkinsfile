@@ -8,7 +8,7 @@ pipeline {
         }
         stage ('Build interface'){
             steps {
-                build job: 'collie.account', wait: true
+                build job: 'account', wait: true
             }
         }
         stage ('Build') {
