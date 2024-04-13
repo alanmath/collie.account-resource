@@ -23,6 +23,16 @@ pipeline {
                 }
             }
         }
+        stage('Security Scan') {
+            steps {
+                script {
+                    // Trivy scan command
+                    sh "trivy image --format table --no-progress alanmath/account:${env.BUILD_ID} > trivy_report.txt"
+                    // Print the Trivy scan results
+                    sh "cat trivy_report.txt"
+                }
+            }
+        }
         stage('Push Image'){
             steps{
                 script {
@@ -32,6 +42,14 @@ pipeline {
                     }
                 }
             }
+        }
+    }
+    post {
+        always {
+            // Clean up Trivy report file
+            sh "rm -f trivy_report.txt"
+            // Example: Archive the artifacts
+            archiveArtifacts artifacts: 'trivy_report.txt', onlyIfSuccessful: true
         }
     }
 }
