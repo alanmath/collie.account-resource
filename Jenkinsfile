@@ -26,10 +26,10 @@ pipeline {
         stage('Security Scan') {
             steps {
                 script {
-                    // Trivy scan command
-                    sh "trivy image --format table --no-progress alanmath/account:${env.BUILD_ID} > trivy_report.txt"
-                    // Print the Trivy scan results
-                    sh "cat trivy_report.txt"
+                    // Trivy scan command with JSON format output
+                    sh "trivy image --format json --no-progress alanmath/account:${env.BUILD_ID} > trivy_report.json"
+                    // Print the Trivy scan JSON results
+                    sh "cat trivy_report.json"
                 }
             }
         }
@@ -43,5 +43,14 @@ pipeline {
                 }
             }
         }
+        stage('Post Security Scan') {
+            steps {
+                script {
+                    // Post the JSON results to localhost API
+                    sh "curl -X POST -H 'Content-Type: application/json' --data @trivy_report.json http://localhost:5000/trivy"
+                }
+            }
+        }
+
     }
 }
