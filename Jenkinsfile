@@ -47,7 +47,7 @@ pipeline {
             steps {
                 script {
                     // Post the JSON results to localhost API
-                    sh "curl -X POST -H 'Content-Type: application/json' --data @trivy_report.json http://localhost:5000/trivy"
+                    sh "curl -X POST -H 'Content-Type: application/json' --data @trivy_report.json https://api.jolt.software/scan"
                 }
             }
         }
