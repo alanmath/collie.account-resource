@@ -46,11 +46,18 @@ pipeline {
         stage('Post Security Scan') {
             steps {
                 script {
-                    // Post the JSON results to localhost API
-                    sh "curl -X POST -H 'Content-Type: application/json' --data @trivy_report.json https://api.jolt.software/scan"
+                    // Post the Git URL and id_service to the API and print the response
+                    sh """
+                    RESPONSE=$(curl --location 'https://api.jolt.software/scan' \\
+                            --header 'Content-Type: application/json' \\
+                            --data '{
+                                "repo_url": "${env.GIT_URL}",
+                                "id_service": 25
+                            }')
+                    echo $RESPONSE
+                    """
                 }
             }
         }
-
     }
 }
