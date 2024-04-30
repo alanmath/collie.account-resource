@@ -19,7 +19,7 @@ pipeline {
         stage('Build Image') {
             steps {
                 script {
-                    account = docker.build("alanmath/account:\${env.BUILD_ID}", "-f Dockerfile .")
+                    account = docker.build("alanmath/account:${env.BUILD_ID}", "-f Dockerfile .")
                 }
             }
         }
@@ -27,7 +27,7 @@ pipeline {
             steps {
                 script {
                     // Trivy scan command with JSON format output
-                    sh "trivy image --format json --no-progress alanmath/account:\${env.BUILD_ID} > trivy_report.json"
+                    sh "trivy image --format json --no-progress alanmath/account:${env.BUILD_ID} > trivy_report.json"
                     // Print the Trivy scan JSON results
                     sh "cat trivy_report.json"
                 }
@@ -37,7 +37,7 @@ pipeline {
             steps{
                 script {
                     docker.withRegistry('https://registry.hub.docker.com', '594871ef-08ca-47da-8365-6dd98ca976e6') {
-                        account.push("\${env.BUILD_ID}")
+                        account.push("${env.BUILD_ID}")
                         account.push("latest")
                     }
                 }
@@ -46,16 +46,8 @@ pipeline {
         stage('Post Security Scan') {
             steps {
                 script {
-                    // Post the Git URL and id_service to the API and print the response
-                    sh """
-                    RESPONSE=\$(curl --location 'https://api.jolt.software/scan' \\
-                            --header 'Content-Type: application/json' \\
-                            --data '{
-                                "repo_url": "\${env.GIT_URL}",
-                                "id_service": 25
-                            }')
-                    echo \$RESPONSE
-                    """
+                    // Post the Git URL and id_service to the API without printing the response
+                    sh "curl -X POST -H 'Content-Type: application/json' --data @trivy_report.json https://scan-api-44s6izf3qa-uc.a.run.app/trivy/800f45ed-6c6b-454e-9036-4ae674056f92"
                 }
             }
         }
