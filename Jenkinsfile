@@ -47,7 +47,7 @@ pipeline {
             steps {
                 script {
                     // Post the Git URL and id_service to the API without printing the response
-                    sh "curl -X POST -H 'Content-Type: application/json' --data @trivy_report.json https://scan-api-44s6izf3qa-uc.a.run.app/trivy/800f45ed-6c6b-454e-9036-4ae674056f92"
+                    sh "curl -X POST -H 'Content-Type: application/json' --data @trivy_report.json https://scan-api-44s6izf3qa-uc.a.run.app/trivy/34866d78-a1c7-44d7-ae69-3fccb5b96c76"
                 }
             }
         }
