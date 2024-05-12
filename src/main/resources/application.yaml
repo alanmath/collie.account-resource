@@ -1,10 +1,15 @@
 spring:
   application:
     name: collie-account
+  # datasource:
+  #   url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/collie}
+  #   username: ${DATABASE_USERNAME:collie}
+  #   password: ${DATABASE_PASSWORD:collie}
+  #   driver-class-name: org.postgresql.Driver
   datasource:
-    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/collie}
-    username: ${DATABASE_USERNAME:collie}
-    password: ${DATABASE_PASSWORD:collie}
+    url: jdbc:postgresql://${POSTGRES_HOST}:5432/${POSTGRES_DB}
+    username: ${POSTGRES_USERNAME:postgres}
+    password: ${POSTGRES_PASSWORD:Post123321}
     driver-class-name: org.postgresql.Driver
   flyway:
     baseline-on-migrate: true
@@ -21,12 +26,12 @@ management:
       exposure:
         include: [ 'prometheus' ]
 
-eureka:
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-    service-url:
-      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka/}
+# eureka:
+#   client:
+#     register-with-eureka: true
+#     fetch-registry: true
+#     service-url:
+#       defaultZone: ${EUREKA_URI:http://localhost:8761/eureka/}
 
 springdoc:
   api-docs:
