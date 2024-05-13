@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        K8S_PORT = 55673
+        K8S_PORT = 52711
     }
     stages {
         stage ('Jenkins Account') {
